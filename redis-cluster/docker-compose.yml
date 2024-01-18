@@ -1,0 +1,48 @@
+---
+version: '3.7'
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - redis-master
+
+  redis-master:
+    image: redis:6-alpine
+    container_name: redis-master
+    command: redis-server --requirepass redis_pass --masterauth redis_pass --appendonly yes
+    ports:
+      - "6379:6379"
+ 
+  redis-slave1:
+    image: redis:6-alpine
+    container_name: redis-slave1
+    command: redis-server --slaveof redis-master 6379 --requirepass redis_pass --masterauth redis_pass  --appendonly yes
+
+  redis-slave2:
+    image: redis:6-alpine
+    container_name: redis-slave2
+    command: redis-server --slaveof redis-master 6379 --requirepass redis_pass --masterauth redis_pass  --appendonly yes
+
+  # Instance 1
+  redis-sentinel1:
+    build: 
+      context: ./redis-sentinel
+    container_name: redis-sentinel1
+    restart: always
+ 
+  # Instance 2
+  redis-sentinel2:
+    build: 
+      context: ./redis-sentinel
+    container_name: redis-sentinel2
+    restart: always
+
+ 
+  # Instance 3
+  redis-sentinel3:
+    build: 
+      context: ./redis-sentinel
+    container_name: redis-sentinel3
+    restart: always
