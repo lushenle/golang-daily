@@ -1,0 +1,45 @@
+// file_server.proto
+syntax = "proto3";
+package pb;
+option go_package = "github.com/lushenle/golang-daily/fileserver/pb";
+
+service FileServer {
+  rpc GetFiles(Path) returns (FileList) {}
+  rpc CheckFileMD5 (FileCheckRequest) returns (FileCheckResponse) {}
+  rpc UploadFile(stream FileData) returns (Status) {}
+  rpc DownloadFile(DownloadRequest) returns (stream FileChunk) {}
+}
+
+message Path {
+  string filename = 1;
+}
+
+message FileList {
+  repeated string files = 1;
+}
+
+message FileCheckRequest {
+  repeated string filenames = 1;
+}
+
+message FileCheckResponse {
+  map<string, string> fileHash = 1;
+}
+
+message FileData {
+  string filename = 1;
+  bytes data = 2;
+}
+
+message Status {
+  int32 code = 1;
+  string message = 2;
+}
+
+message DownloadRequest {
+  string filename = 1;
+}
+
+message FileChunk {
+  bytes chunk = 1;
+}
